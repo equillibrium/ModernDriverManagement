@@ -208,6 +208,7 @@
 						 - Fixed several issues related to the Fallback Driver Package functionality where old code was left behind from the webservice days
 	4.2.1 - (2022-09-22) - Added support for Windows 10 22H2
 	4.2.2 - (2023-06-23) - Fixed Windows 10 22H2 missing switch value
+ 	TASS - Added IRBIS as a model
 #>
 [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = "BareMetal")]
 param(
@@ -1189,6 +1190,11 @@ Process {
 				$ComputerDetails.Manufacturer = "Getac"
 				$ComputerDetails.Model = (Get-WmiObject -Class "Win32_ComputerSystem" | Select-Object -ExpandProperty Model).Trim()
 				$ComputerDetails.SystemSKU = (Get-CIMInstance -ClassName "MS_SystemInformation" -NameSpace root\WMI).BaseBoardProduct.Trim()
+			}
+   			"*Irbis*" {
+				$ComputerDetails.Manufacturer = "Irbis"
+				$ComputerDetails.Model = (Get-WmiObject -Class "Win32_ComputerSystem" | Select-Object -ExpandProperty Model).Trim()
+				$ComputerDetails.SystemSKU = (Get-CIMInstance -ClassName "MS_SystemInformation" -NameSpace root\WMI).SystemSku.Trim()
 			}
 		}
 		
