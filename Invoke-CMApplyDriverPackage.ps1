@@ -209,6 +209,7 @@
 	4.2.1 - (2022-09-22) - Added support for Windows 10 22H2
 	4.2.2 - (2023-06-23) - Fixed Windows 10 22H2 missing switch value
  	TASS - Added IRBIS as a model
+    TASS - Added UNIVERSAL D1 model
 #>
 [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = "BareMetal")]
 param(
@@ -320,7 +321,7 @@ param(
 	
 	[parameter(Mandatory = $false, ParameterSetName = "Debug", HelpMessage = "Override the automatically detected computer manufacturer when running in debug mode.")]
 	[ValidateNotNullOrEmpty()]
-	[ValidateSet("HP", "Hewlett-Packard", "Dell", "Lenovo", "Microsoft", "Fujitsu", "Panasonic", "Viglen", "AZW", "Getac")]
+	[ValidateSet("HP", "Hewlett-Packard", "Dell", "Lenovo", "Microsoft", "Fujitsu", "Panasonic", "Viglen", "AZW", "Getac", "Irbis","Asus")]
 	[string]$Manufacturer,
 	
 	[parameter(Mandatory = $false, ParameterSetName = "Debug", HelpMessage = "Override the automatically detected computer model when running in debug mode.")]
@@ -1195,6 +1196,16 @@ Process {
 				$ComputerDetails.Manufacturer = "Irbis"
 				$ComputerDetails.Model = (Get-WmiObject -Class "Win32_ComputerSystem" | Select-Object -ExpandProperty Model).Trim()
 				$ComputerDetails.SystemSKU = (Get-CIMInstance -ClassName "MS_SystemInformation" -NameSpace root\WMI).SystemSku.Trim()
+			}
+            "*Asus*" {
+				$ComputerDetails.Manufacturer = "Universal"
+                if ((Get-CIMInstance -ClassName "MS_SystemInformation" -NameSpace root\WMI).BaseBoardProduct.Trim() -eq "PRIME H510M-E") {
+                    $ComputerDetails.Model = "D1"
+                }
+                else {
+				    $ComputerDetails.Model = (Get-CIMInstance -ClassName "MS_SystemInformation" -NameSpace root\WMI).BaseBoardProduct.Trim()
+                }
+				$ComputerDetails.SystemSKU = (Get-CIMInstance -ClassName "MS_SystemInformation" -NameSpace root\WMI).BaseBoardProduct.Trim()
 			}
 		}
 		
